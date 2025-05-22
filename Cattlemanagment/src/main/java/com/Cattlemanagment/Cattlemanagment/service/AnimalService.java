@@ -1,38 +1,50 @@
-
-
 package com.Cattlemanagment.Cattlemanagment.service;
 
-
-
-import com.Cattlemanagment.Cattlemanagment.model.Animal;
+import com.Cattlemanagment.Cattlemanagment.entity.Animal;
 import com.Cattlemanagment.Cattlemanagment.repository.AnimalRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AnimalService {
 
-    private final AnimalRepository repository;
+    @Autowired
+    private AnimalRepository animalRepository;
 
-    public AnimalService(AnimalRepository repository) {
-        this.repository = repository;
+    public List<Animal> getAllAnimals() {
+        return animalRepository.findAll();
     }
 
-    public List<Animal> findAll() {
-        return repository.findAll();
+    public Optional<Animal> getAnimalById(Long id) {
+        return animalRepository.findById(id);
     }
 
-    public Animal findById(Long id) {
-        return repository.findById(id).orElse(null);
+    public Animal addAnimal(Animal animal) {
+        return animalRepository.save(animal);
     }
 
-    public Animal save(Animal animal) {
-        return repository.save(animal);
+    public Animal updateAnimal(Long id, Animal animalDetails) {
+        Animal animal = animalRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Animal non trouvé avec id : " + id));
+
+        animal.setName(animalDetails.getName());
+        animal.setType(animalDetails.getType());
+        animal.setBirthDate(animalDetails.getBirthDate());
+        animal.setGender(animalDetails.getGender());
+        animal.setBreed(animalDetails.getBreed());
+        animal.setStatus(animalDetails.getStatus());
+
+        return animalRepository.save(animal);
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public void deleteAnimal(Long id) {
+        Animal animal = animalRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Animal non trouvé avec id : " + id));
+
+        animalRepository.delete(animal);
     }
 }
-
